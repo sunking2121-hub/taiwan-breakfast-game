@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>《吃早餐啦！》台灣早餐地圖・3–5 歲幼兒語音互動學習網（高 8.9 × 寬 6.4 cm）</title>
+  <script src="吃早餐啦_cards_data.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+      background: #FFFBEB;
+      color: #1E293B;
+      padding-bottom: 60px;
+    }
+    header {
+      background: linear-gradient(135deg, #DC2626 0%, #EA580C 100%);
+      padding: 22px 28px;
+      border-bottom: 5px solid #FACC15;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      color: #FFFFFF;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+    .title-area h1 {
+      margin: 0;
+      font-size: 27px;
+      color: #FEF08A;
+      text-shadow: 2px 2px 0 #7F1D1D;
+    }
+    .title-area p {
+      margin: 6px 0 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFEDD5;
+    }
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-weight: 900;
+      font-size: 13.5px;
+      text-decoration: none;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .btn-primary {
+      background: #FACC15;
+      color: #7C2D12;
+      border-color: #FEF08A;
+    }
+    .btn-secondary {
+      background: #FFFFFF;
+      color: #9A3412;
+      border-color: #FDBA74;
+    }
+
+    /* 語音導覽控制列 */
+    .voice-control-bar {
+      background: #FEF3C7;
+      border-bottom: 3px solid #F59E0B;
+      padding: 12px 28px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .voice-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      color: #92400E;
+      font-size: 15px;
+    }
+    .speaking-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #94A3B8;
+      display: inline-block;
+    }
+    .speaking-dot.active {
+      background: #16A34A;
+      box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.25);
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+    }
+    .voice-settings {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #78350F;
+    }
+    .voice-settings select, .voice-settings input {
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 2px solid #F59E0B;
+      font-weight: 800;
+      background: #FFFFFF;
+      color: #1E293B;
+    }
+    .stop-btn {
+      background: #DC2626;
+      color: #FFFFFF;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 1380px;
+      margin: 20px auto;
+      padding: 0 24px;
+    }
+
+    /* 互動模式切換分頁 */
+    .mode-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    .mode-tab {
+      flex: 1;
+      min-width: 220px;
+      background: #FFFFFF;
+      border: 3px solid #FED7AA;
+      border-radius: 16px;
+      padding: 14px 18px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .mode-tab:hover {
+      border-color: #F97316;
+      transform: translateY(-2px);
+    }
+    .mode-tab.active {
+      background: linear-gradient(135deg, #FEF3C7 0%, #FFEDD5 100%);
+      border-color: #EA580C;
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.18);
+    }
+    .mode-icon {
+      font-size: 32px;
+    }
+    .mode-text h3 {
+      margin: 0;
+      font-size: 17px;
+      color: #9A3412;
+    }
+    .mode-text p {
+      margin: 4px 0 0;
+      font-size: 12.5px;
+      color: #64748B;
+      font-weight: 700;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* 篩選器 */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0 20px;
+      align-items: center;
+    }
+    .filter-btn {
+      padding: 8px 16px;
+      border-radius: 99px;
+      border: 2px solid #CBD5E1;
+      background: #FFFFFF;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      color: #334155;
+      transition: all 0.15s;
+    }
+    .filter-btn.active {
+      background: #EA580C;
+      color: #FFFFFF;
+      border-color: #EA580C;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: #9A3412;
+      margin: 24px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* 卡牌網格與語音按鈕 */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(335px, 1fr));
+      gap: 20px;
+    }
+    .card-showcase {
+      background: #FFFFFF;
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+      border: 3px solid #FED7AA;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card-showcase.playing {
+      border-color: #16A34A;
+      box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.2);
+    }
+    .card-showcase-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 6px;
+    }
+    .card-showcase-header h3 {
+      margin: 0;
+      font-size: 17px;
+      color: #1E293B;
+    }
+    .badge {
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 99px;
+      background: #FEF3C7;
+      color: #B45309;
+      white-space: nowrap;
+    }
+    .pair-preview {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    /* 6.4 : 8.9 比例縮圖 */
+    .mini-card {
+      width: 132px;
+      height: 183.5px;
+      border-radius: 10px;
+      border: 2px solid #CBD5E1;
+      background: #FFFFFF;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .mini-card:hover {
+      transform: scale(1.03);
+      border-color: #EA580C;
+    }
+    .mini-card svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .side-tag {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      background: rgba(30,41,59,0.78);
+      color: #FFF;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      z-index: 5;
+    }
+
+    /* 每張卡片專屬語音按鈕群 */
+    .audio-btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-top: 12px;
+    }
+    .audio-btn {
+      border: none;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-weight: 900;
+      font-size: 12.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: transform 0.1s, opacity 0.15s;
+      font-family: inherit;
+    }
+    .audio-btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.94;
+    }
+    .audio-btn-full {
+      grid-column: span 2;
+      background: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
+      color: #FFFFFF;
+      font-size: 13.5px;
+      padding: 9px 12px;
+    }
+    .audio-btn-story {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1.5px solid #F59E0B;
+    }
+    .audio-btn-quiz {
+      background: #DBEAFE;
+      color: #1E40AF;
+      border: 1.5px solid #60A5FA;
+    }
+    .audio-btn-order {
+      grid-column: span 2;
+      background: #FCE7F3;
+      color: #9D174D;
+      border: 1.5px solid #F472B6;
+    }
+
+    /* 互動分類遊戲區 & 點餐遊戲區 */
+    .game-board {
+      background: #FFFFFF;
+      border: 4px solid #F59E0B;
+      border-radius: 22px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+    }
+    .game-card-stage {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 28px;
+      margin: 20px 0;
+    }
+    .big-interactive-card {
+      width: 240px;
+      height: 333.75px;
+      border-radius: 18px;
+      border: 4px solid #CBD5E1;
+      overflow: hidden;
+      background: #FFFFFF;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      cursor: pointer;
+    }
+    .big-interactive-card svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .choice-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .choice-btn {
+      padding: 16px 28px;
+      border-radius: 16px;
+      font-size: 20px;
+      font-weight: 900;
+      border: 4px solid transparent;
+      cursor: pointer;
+      color: #FFFFFF;
+      min-width: 210px;
+      transition: transform 0.15s;
+    }
+    .choice-btn:hover {
+      transform: scale(1.05);
+    }
+    .feedback-banner {
+      margin-top: 18px;
+      padding: 14px 20px;
+      border-radius: 14px;
+      font-size: 19px;
+      font-weight: 900;
+      display: inline-block;
+    }
+
+    /* 點餐餐盤 */
+    .tray-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+      max-height: 440px;
+      overflow-y: auto;
+      padding: 10px;
+      background: #FFFBEB;
+      border-radius: 16px;
+      border: 2px solid #FDE68A;
+    }
+    .tray-item {
+      background: #FFFFFF;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .tray-item:hover {
+      border-color: #EA580C;
+      transform: translateY(-2px);
+    }
+    .tray-item .thumb {
+      width: 96px;
+      height: 133.5px;
+      margin: 0 auto 6px;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+    .tray-item .thumb svg {
+      width: 100%;
+      height: 100%;
+    }
+    .tray-item .t-name {
+      font-size: 13px;
+      font-weight: 900;
+      color: #1E293B;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title-area">
+      <h1>🔊 《吃早餐啦！》台灣早餐地圖・3–5 歲幼兒語音互動學習網</h1>
+      <p>點擊任一張早餐卡即可聽取「國語發音、美味小故事、3–5歲互動問答、點餐示範」｜實體卡牌尺寸：高 8.9 cm × 寬 6.4 cm</p>
+    </div>
+    <div class="action-buttons">
+      <a class="btn btn-primary" href="吃早餐啦_A4_對折黏貼版_高8.9寬6.4cm.pdf" target="_blank">📄 A4 對折黏貼版 PDF</a>
+      <a class="btn btn-secondary" href="吃早餐啦_A4_雙面列印版_高8.9寬6.4cm.pdf" target="_blank">📄 A4 雙面列印版 PDF</a>
+      <a class="btn btn-secondary" href="吃早餐啦_A4_對折黏貼版_高8.9寬6.4cm.html" target="_blank">🖨️ 網頁列印版</a>
+    </div>
+  </header>
+
+  <!-- 頂部語音狀態與調整控制列 -->
+  <div class="voice-control-bar">
+    <div class="voice-status">
+      <span class="speaking-dot" id="speaking-dot"></span>
+      <span id="speaking-text">🔈 語音小老師待命中（請點選下方任一張早餐卡的語音按鈕！）</span>
+    </div>
+    <div class="voice-settings">
+      <label>🗣️ 語速：
+        <select id="voice-rate">
+          <option value="0.82">幼兒慢速 (0.8x)</option>
+          <option value="0.92" selected>親切適中 (0.9x)</option>
+          <option value="1.05">正常語速 (1.0x)</option>
+        </select>
+      </label>
+      <label>🎵 語音聲線：
+        <select id="voice-select"></select>
+      </label>
+      <button class="stop-btn" onclick="stopSpeech()">⏹️ 停止發音</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- 4 大互動學習模式切換 -->
+    <div class="mode-tabs">
+      <div class="mode-tab active" onclick="switchTab('tab-gallery', this)">
+        <div class="mode-icon">🃏</div>
+        <div class="mode-text">
+          <h3>1. 全套有聲早餐圖鑑 (36張)</h3>
+          <p>每張皆附「完整導覽、故事、問答、點餐」語音</p>
+        </div>
+      </div>
+      <div class="mode-tab" onclick="switchTab('tab-game-style', this)">
+        <div class="mode-icon">🥢</div>
+        <div class="mode-text">
+          <h3>2. 幼兒玩法一：中式／西式分類</h3>
+          <p>聽語音題目，幫早餐找到中式或西式餐盤！</p>
+        </div>
+      </div>
+      <div class="mode-tab" onclick="switchTab('tab-game-taste', this)">
+        <div class="mode-icon">🧂</div>
+        <div class="mode-text">
+          <h3>3. 幼兒玩法二：鹹的／甜的分類</h3>
+          <p>聽語音題目，分辨哪些吃起來有加鹽巴！</p>
+        </div>
+      </div>
+      <div class="mode-tab" onclick="switchTab('tab-game-order', this)">
+        <div class="mode-icon">🧑‍🍳</div>
+        <div class="mode-text">
+          <h3>4. 幼兒玩法三：有聲看圖點餐機</h3>
+          <p>點選主餐＋飲料，練習開口請好朋友吃早餐！</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 模式 1：全套有聲早餐圖鑑 -->
+    <div id="tab-gallery" class="tab-panel active">
+      <div class="section-title">🃏 台灣特色有聲早餐圖卡（共 30 張，點擊卡片或按鈕即可發音）</div>
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterCards('ALL', this)">全部早餐 (30)</button>
+        <button class="filter-btn" onclick="filterCards('CN', this)">🥢 中式早餐 (20)</button>
+        <button class="filter-btn" onclick="filterCards('WE', this)">🍴 西式早餐 (10)</button>
+        <button class="filter-btn" onclick="filterCards('SALTY', this)">🧂 鹹的・有加鹽巴 (23)</button>
+        <button class="filter-btn" onclick="filterCards('SWEET', this)">🍯 甜的・香甜滋味 (7)</button>
+      </div>
+      <div class="cards-grid" id="cards-grid"></div>
+
+      <div class="section-title">📘 3–5 歲幼兒園專屬分類板卡、看圖點餐卡與說明書卡（共 6 張，皆附玩法語音說明）</div>
+      <div class="cards-grid" id="special-grid"></div>
+    </div>
+
+    <!-- 模式 2：中式 vs 西式互動分類遊戲 -->
+    <div id="tab-game-style" class="tab-panel">
+      <div class="game-board">
+        <h2 style="margin:0;color:#9A3412;">🥢 幼兒園分類挑戰：這是「中式早餐」還是「西式早餐」？</h2>
+        <p style="color:#475569;font-weight:700;margin:6px 0 14px;">點擊卡牌可以聽語音介紹，再按下方的紅／藍大按鈕分類喔！</p>
+        <div class="game-card-stage">
+          <div class="big-interactive-card" id="style-quiz-card" onclick="speakStyleQuizPrompt()"></div>
+        </div>
+        <div>
+          <button class="btn btn-primary" onclick="speakStyleQuizPrompt()">🔊 再聽一次題目語音</button>
+          <button class="btn btn-secondary" onclick="nextStyleQuiz()">⏭️ 換下一張早餐卡</button>
+        </div>
+        <div class="choice-buttons">
+          <button class="choice-btn" style="background:#DC2626;" onclick="answerStyleQuiz('CN')">🥢 中式早餐</button>
+          <button class="choice-btn" style="background:#2563EB;" onclick="answerStyleQuiz('WE')">🍴 西式早餐</button>
+        </div>
+        <div id="style-quiz-feedback"></div>
+      </div>
+    </div>
+
+    <!-- 模式 3：鹹的 vs 甜的互動分類遊戲 -->
+    <div id="tab-game-taste" class="tab-panel">
+      <div class="game-board">
+        <h2 style="margin:0;color:#9A3412;">🧂 幼兒園味覺挑戰：這道早餐吃起來是「鹹的（有加鹽巴）」還是「甜的」？</h2>
+        <p style="color:#475569;font-weight:700;margin:6px 0 14px;">仔細看一看、聽一聽，它是有加鹽巴醬油，還是加果醬蜂蜜呢？</p>
+        <div class="game-card-stage">
+          <div class="big-interactive-card" id="taste-quiz-card" onclick="speakTasteQuizPrompt()"></div>
+        </div>
+        <div>
+          <button class="btn btn-primary" onclick="speakTasteQuizPrompt()">🔊 再聽一次題目語音</button>
+          <button class="btn btn-secondary" onclick="nextTasteQuiz()">⏭️ 換下一張早餐卡</button>
+        </div>
+        <div class="choice-buttons">
+          <button class="choice-btn" style="background:#D97706;" onclick="answerTasteQuiz('SALTY')">🧂 鹹的（有加鹽巴）</button>
+          <button class="choice-btn" style="background:#DB2777;" onclick="answerTasteQuiz('SWEET')">🍯 甜的（香甜滋味）</button>
+        </div>
+        <div id="taste-quiz-feedback"></div>
+      </div>
+    </div>
+
+    <!-- 模式 4：有聲看圖點餐機 -->
+    <div id="tab-game-order" class="tab-panel">
+      <div class="game-board">
+        <h2 style="margin:0;color:#065F46;">🧑‍🍳 幸福早餐店・看圖有聲點餐檯</h2>
+        <p style="color:#475569;font-weight:700;margin:6px 0 14px;">請從下方餐檯點選想吃的早餐放進餐盤，電腦會幫你大聲唸出點餐句，一起跟著唸並請好朋友吃早餐吧！</p>
+
+        <div style="background:#ECFDF5;border:3px solid #10B981;border-radius:18px;padding:16px;margin-bottom:18px;">
+          <div style="font-size:18px;font-weight:900;color:#047857;margin-bottom:10px;">
+            🍽️ 目前好朋友餐盤裡有：（共 <span id="order-count">0</span> 樣，<span id="order-hearts">0</span> 顆愛心）
+          </div>
+          <div id="order-selected-list" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;min-height:60px;align-items:center;font-weight:800;color:#64748B;">
+            尚未選擇餐點，請點擊下方早餐圖卡加入餐盤！
+          </div>
+          <div style="margin-top:14px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;">
+            <button class="btn btn-primary" style="font-size:16px;padding:12px 22px;" onclick="speakFullOrder()">🔊 大聲點餐請好朋友吃！</button>
+            <button class="btn btn-secondary" onclick="clearOrderTray()">🗑️ 清空餐盤重選</button>
+          </div>
+        </div>
+
+        <div class="tray-grid" id="order-tray-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // Web Speech API 台灣國語語音引擎封裝
+    // ==========================================
+    const synth = window.speechSynthesis;
+    let voices = [];
+    let currentPlayingId = null;
+
+    function loadVoices() {
+      voices = synth ? synth.getVoices() : [];
+      const select = document.getElementById('voice-select');
+      if (!select) return;
+      select.innerHTML = '';
+
+      // 優先排序 zh-TW (台灣國語) 語音
+      const sorted = [...voices].sort((a, b) => {
+        const aTW = a.lang.toLowerCase().includes('zh-tw') ? 2 : (a.lang.toLowerCase().includes('zh') ? 1 : 0);
+        const bTW = b.lang.toLowerCase().includes('zh-tw') ? 2 : (b.lang.toLowerCase().includes('zh') ? 1 : 0);
+        return bTW - aTW;
+      });
+
+      sorted.forEach((v, i) => {
+        if (v.lang.toLowerCase().includes('zh') || i < 5) {
+          const opt = document.createElement('option');
+          opt.value = v.name;
+          opt.textContent = `${v.name} (${v.lang})`;
+          select.appendChild(opt);
+        }
+      });
+
+      if (select.options.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = '系統預設國語語音 (zh-TW)';
+        select.appendChild(opt);
+      }
+    }
+
+    if (synth) {
+      loadVoices();
+      if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = loadVoices;
+      }
+    }
+
+    function stopSpeech() {
+      if (synth) synth.cancel();
+      document.getElementById('speaking-dot').classList.remove('active');
+      document.getElementById('speaking-text').textContent = '🔈 語音已停止，請點選任一張早餐卡聽介紹！';
+      document.querySelectorAll('.card-showcase.playing').forEach(el => el.classList.remove('playing'));
+    }
+
+    function speakText(text, cardId = null, label = '') {
+      if (!synth) {
+        alert('您的瀏覽器不支援語音合成功能，建議使用 Edge、Chrome 或 Safari 開啟！');
+        return;
+      }
+      synth.cancel();
+
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'zh-TW';
+      const rateEl = document.getElementById('voice-rate');
+      utter.rate = rateEl ? parseFloat(rateEl.value) : 0.92;
+      utter.pitch = 1.05;
+
+      const selectedVoiceName = document.getElementById('voice-select')?.value;
+      const matchedVoice = voices.find(v => v.name === selectedVoiceName) ||
+                           voices.find(v => v.lang.toLowerCase().includes('zh-tw')) ||
+                           voices.find(v => v.lang.toLowerCase().includes('zh'));
+      if (matchedVoice) utter.voice = matchedVoice;
+
+      document.querySelectorAll('.card-showcase.playing').forEach(el => el.classList.remove('playing'));
+      if (cardId) {
+        const cardEl = document.getElementById(`showcase-${cardId}`);
+        if (cardEl) cardEl.classList.add('playing');
+      }
+
+      utter.onstart = () => {
+        document.getElementById('speaking-dot').classList.add('active');
+        document.getElementById('speaking-text').textContent = `🔊 正在播放${label ? '【' + label + '】' : ''}：${text}`;
+      };
+      utter.onend = () => {
+        document.getElementById('speaking-dot').classList.remove('active');
+        document.getElementById('speaking-text').textContent = `✅ 播放完畢：${label || '早餐語音導覽'}`;
+        document.querySelectorAll('.card-showcase.playing').forEach(el => el.classList.remove('playing'));
+      };
+      utter.onerror = () => {
+        document.getElementById('speaking-dot').classList.remove('active');
+      };
+
+      synth.speak(utter);
+    }
+
+    // ==========================================
+    // 每張早餐卡的 4 種專屬語音腳本
+    // ==========================================
+    function playCardVoice(id, mode) {
+      const card = BREAKFAST_CARDS_DATA.find(c => c.id === id);
+      if (!card) return;
+
+      let script = '';
+      if (mode === 'FULL') {
+        script = `第 ${card.id} 號早餐卡：${card.name}。它是來自${card.origin}的${card.style}，吃起來是${card.taste}。${card.story} 小朋友，${card.kidQuestion}`;
+      } else if (mode === 'STORY') {
+        script = `${card.name}的美味小故事：${card.story} 小叮嚀：${card.tip}`;
+      } else if (mode === 'QUIZ') {
+        script = `三到五歲互動問答：小朋友，看著${card.name}的圖片想一想，${card.kidQuestion}`;
+      } else if (mode === 'ORDER') {
+        script = `看圖點餐練習，請跟著我一起說：早安老闆，我要點一份${card.name}！好朋友，我請你吃${card.name}，這是${card.style}，吃起來是${card.taste}喔！`;
+      }
+      speakText(script, id, `${card.name}`);
+    }
+
+    // 特殊分類卡與說明書卡的語音腳本
+    const SPECIAL_VOICE_SCRIPTS = {
+      31: "分類遊戲卡：中式早餐盤。小朋友，請找找看哪些早餐是中式早餐，像是蛋餅、飯糰、燒餅油條、包子饅頭、還有台南牛肉湯，它們的左上角都有紅色的中式早餐標章，請把它們排在這一邊！",
+      32: "分類遊戲卡：西式早餐盤。小朋友，請找找看哪些早餐是西式早餐，像是火腿蛋三明治、漢堡、草莓厚片吐司、鬆餅、還有早餐店大冰奶，它們的左上角都有藍色的西式早餐標章，請把它們排在這一邊！",
+      33: "分類遊戲卡：吃起來是鹹的。有加鹽巴、醬油膏或胡椒鹽的早餐都放在這裡！特別注意，熱騰騰的鹹豆漿雖然是豆漿，但裡面加了蔥花、油條跟鹽巴，吃起來也是鹹的喔！",
+      34: "分類遊戲卡：吃起來是甜的。有加草莓果醬、蜂蜜、麥芽糖，或是甜甜的冰豆漿、花生米漿、大冰奶、鮮奶麥片水果碗，吃起來都是甜甜的滋味，吃完別忘了要漱口刷牙喔！",
+      35: "好朋友點餐卡：幸福早餐店點餐單。早安！請問今天想吃什麼早餐？任務一，看圖點一份主餐；任務二，配一杯好喝的飲料或湯，雙手送給好朋友說：我請你吃早餐！",
+      36: "吃早餐啦！台灣早餐地圖桌上遊戲，三到五歲幼兒園學習版。共有三種好玩的幼兒玩法：第一種是中式與西式早餐大分類；第二種是鹹的與甜的味覺分類；第三種是抽牌請好朋友吃早餐、練習看圖點餐！"
+    };
+
+    function playSpecialVoice(id, name) {
+      const text = SPECIAL_VOICE_SCRIPTS[id] || name;
+      speakText(text, id, name);
+    }
+
+    // ==========================================
+    // 渲染主圖鑑與特殊卡
+    // ==========================================
+    const cardsGrid = document.getElementById('cards-grid');
+    function renderBreakfastList(filter) {
+      cardsGrid.innerHTML = '';
+      ALL_BREAKFAST_ITEMS.slice(0, 30).forEach(c => {
+        if (filter === 'CN' && c.styleCode !== 'CN') return;
+        if (filter === 'WE' && c.styleCode !== 'WE') return;
+        if (filter === 'SALTY' && c.tasteCode !== 'SALTY') return;
+        if (filter === 'SWEET' && c.tasteCode !== 'SWEET') return;
+
+        const el = document.createElement('div');
+        el.className = 'card-showcase';
+        el.id = `showcase-${c.id}`;
+        el.innerHTML = `
+          <div>
+            <div class="card-showcase-header">
+              <h3>#${String(c.id).padStart(2, '0')} ${c.name}</h3>
+              <span class="badge">📍 ${c.origin}</span>
+            </div>
+            <div class="pair-preview">
+              <div class="mini-card" title="點擊聽取完整早餐介紹語音" onclick="playCardVoice(${c.id}, 'FULL')">
+                <span class="side-tag">正面圖卡 (點我發音)</span>
+                ${c.renderSVG('A')}
+              </div>
+              <div style="font-weight:900;color:#DC2626;">⇄</div>
+              <div class="mini-card" title="點擊聽取背面小百科與問答語音" onclick="playCardVoice(${c.id}, 'QUIZ')">
+                <span class="side-tag">背面小百科</span>
+                ${c.renderSVG('B')}
+              </div>
+            </div>
+          </div>
+          <div class="audio-btn-group">
+            <button class="audio-btn audio-btn-full" onclick="playCardVoice(${c.id}, 'FULL')">
+              🔊 聽完整介紹（名稱＋分類＋故事）
+            </button>
+            <button class="audio-btn audio-btn-story" onclick="playCardVoice(${c.id}, 'STORY')">
+              📖 聽美味故事
+            </button>
+            <button class="audio-btn audio-btn-quiz" onclick="playCardVoice(${c.id}, 'QUIZ')">
+              🙋 聽幼兒問答
+            </button>
+            <button class="audio-btn audio-btn-order" onclick="playCardVoice(${c.id}, 'ORDER')">
+              🧑‍🍳 聽點餐示範：「我請你吃${c.name}！」
+            </button>
+          </div>
+        `;
+        cardsGrid.appendChild(el);
+      });
+    }
+
+    const specialGrid = document.getElementById('special-grid');
+    ALL_BREAKFAST_ITEMS.slice(30).forEach(s => {
+      const el = document.createElement('div');
+      el.className = 'card-showcase';
+      el.id = `showcase-${s.id}`;
+      el.innerHTML = `
+        <div>
+          <div class="card-showcase-header">
+            <h3>#${String(s.id).padStart(2, '0')} ${s.name}</h3>
+            <span class="badge">6.4 × 8.9 cm</span>
+          </div>
+          <div class="pair-preview">
+            <div class="mini-card" onclick="playSpecialVoice(${s.id}, '${s.name}')">
+              <span class="side-tag">正面 A (點我發音)</span>
+              ${s.renderSVG('A')}
+            </div>
+            <div style="font-weight:900;color:#EA580C;">⇄</div>
+            <div class="mini-card" onclick="playSpecialVoice(${s.id}, '${s.name}')">
+              <span class="side-tag">反面 B</span>
+              ${s.renderSVG('B')}
+            </div>
+          </div>
+        </div>
+        <div class="audio-btn-group">
+          <button class="audio-btn audio-btn-full" onclick="playSpecialVoice(${s.id}, '${s.name}')">
+            🔊 聽這張教學卡的語音引導
+          </button>
+        </div>
+      `;
+      specialGrid.appendChild(el);
+    });
+
+    function filterCards(type, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderBreakfastList(type);
+    }
+
+    // ==========================================
+    // 分頁切換與三大幼兒語音互動遊戲
+    // ==========================================
+    function switchTab(tabId, tabEl) {
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      tabEl.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+
+      if (tabId === 'tab-game-style') {
+        nextStyleQuiz();
+      } else if (tabId === 'tab-game-taste') {
+        nextTasteQuiz();
+      } else if (tabId === 'tab-game-order') {
+        speakText('歡迎來到幸福早餐店點餐檯！請點選你想吃的早餐放進餐盤，請好朋友吃早餐吧！', null, '點餐遊戲');
+      }
+    }
+
+    // 遊戲一：中式 vs 西式
+    let currentStyleCard = BREAKFAST_CARDS_DATA[0];
+    function nextStyleQuiz() {
+      const idx = Math.floor(Math.random() * BREAKFAST_CARDS_DATA.length);
+      currentStyleCard = BREAKFAST_CARDS_DATA[idx];
+      const item = ALL_BREAKFAST_ITEMS.find(x => x.id === currentStyleCard.id);
+      document.getElementById('style-quiz-card').innerHTML = item.renderSVG('A');
+      document.getElementById('style-quiz-feedback').innerHTML = '';
+      speakStyleQuizPrompt();
+    }
+    function speakStyleQuizPrompt() {
+      speakText(`小朋友請看圖，這張是「${currentStyleCard.name}」。請問它是中式早餐，還是西式早餐呢？`, null, currentStyleCard.name);
+    }
+    function answerStyleQuiz(ans) {
+      const fb = document.getElementById('style-quiz-feedback');
+      if (ans === currentStyleCard.styleCode) {
+        fb.innerHTML = `<div class="feedback-banner" style="background:#DCFCE7;color:#166534;border:3px solid #22C55E;">🎉 答對了！「${currentStyleCard.name}」是${currentStyleCard.style}！</div>`;
+        speakText(`太棒了，答對囉！${currentStyleCard.name}是${currentStyleCard.style}！${currentStyleCard.story}`, null, '答對鼓勵');
+      } else {
+        fb.innerHTML = `<div class="feedback-banner" style="background:#FEE2E2;color:#991B1B;border:3px solid #EF4444;">💡 再看一眼卡牌左上角的顏色標章喔！「${currentStyleCard.name}」其實是${currentStyleCard.style}！</div>`;
+        speakText(`喔喔，再看一眼卡牌左上角的標章，${currentStyleCard.name}其實是${currentStyleCard.style}喔！`, null, '溫馨提示');
+      }
+    }
+
+    // 遊戲二：鹹的 vs 甜的
+    let currentTasteCard = BREAKFAST_CARDS_DATA[0];
+    function nextTasteQuiz() {
+      const idx = Math.floor(Math.random() * BREAKFAST_CARDS_DATA.length);
+      currentTasteCard = BREAKFAST_CARDS_DATA[idx];
+      const item = ALL_BREAKFAST_ITEMS.find(x => x.id === currentTasteCard.id);
+      document.getElementById('taste-quiz-card').innerHTML = item.renderSVG('A');
+      document.getElementById('taste-quiz-feedback').innerHTML = '';
+      speakTasteQuizPrompt();
+    }
+    function speakTasteQuizPrompt() {
+      speakText(`味覺大挑戰！這張是「${currentTasteCard.name}」。請問它吃起來是鹹的有加鹽巴，還是甜的呢？`, null, currentTasteCard.name);
+    }
+    function answerTasteQuiz(ans) {
+      const fb = document.getElementById('taste-quiz-feedback');
+      if (ans === currentTasteCard.tasteCode) {
+        fb.innerHTML = `<div class="feedback-banner" style="background:#DCFCE7;color:#166534;border:3px solid #22C55E;">🎉 答對了！「${currentTasteCard.name}」吃起來是${currentTasteCard.taste}！</div>`;
+        speakText(`哇！你真是味覺小達人！${currentTasteCard.name}吃起來是${currentTasteCard.taste}！`, null, '答對鼓勵');
+      } else {
+        fb.innerHTML = `<div class="feedback-banner" style="background:#FEE2E2;color:#991B1B;border:3px solid #EF4444;">💡 看看右上角的標章，「${currentTasteCard.name}」吃起來是${currentTasteCard.taste}喔！</div>`;
+        speakText(`再想一想喔，${currentTasteCard.name}吃起來是${currentTasteCard.taste}！`, null, '溫馨提示');
+      }
+    }
+
+    // 遊戲三：有聲看圖點餐機
+    let orderTray = [];
+    function initOrderTrayGrid() {
+      const grid = document.getElementById('order-tray-grid');
+      grid.innerHTML = '';
+      ALL_BREAKFAST_ITEMS.slice(0, 30).forEach(item => {
+        const card = BREAKFAST_CARDS_DATA.find(c => c.id === item.id);
+        const div = document.createElement('div');
+        div.className = 'tray-item';
+        div.onclick = () => addToOrderTray(card);
+        div.innerHTML = `
+          <div class="thumb">${item.renderSVG('A')}</div>
+          <div class="t-name">#${String(card.id).padStart(2,'0')} ${card.name}</div>
+          <div style="font-size:11px;color:#B45309;font-weight:800;">${'❤️'.repeat(card.priceStars)} 點選加入</div>
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    function addToOrderTray(card) {
+      orderTray.push(card);
+      renderOrderTray();
+      speakText(`叮咚！已點選一份${card.name}，它是${card.style}，吃起來是${card.taste}！`, null, `點餐：${card.name}`);
+    }
+
+    function clearOrderTray() {
+      orderTray = [];
+      renderOrderTray();
+      speakText('餐盤已經清空囉，請重新點餐！', null, '清空餐盤');
+    }
+
+    function renderOrderTray() {
+      const list = document.getElementById('order-selected-list');
+      document.getElementById('order-count').textContent = orderTray.length;
+      const hearts = orderTray.reduce((sum, c) => sum + c.priceStars, 0);
+      document.getElementById('order-hearts').textContent = hearts;
+
+      if (orderTray.length === 0) {
+        list.innerHTML = '尚未選擇餐點，請點擊下方早餐圖卡加入餐盤！';
+        return;
+      }
+      list.innerHTML = orderTray.map((c, idx) => `
+        <span style="background:#FFFFFF;border:2px solid #059669;color:#065F46;padding:6px 12px;border-radius:99px;font-size:14px;display:inline-flex;align-items:center;gap:6px;">
+          🍽️ ${c.name} (${'❤️'.repeat(c.priceStars)})
+        </span>
+      `).join('');
+    }
+
+    function speakFullOrder() {
+      if (orderTray.length === 0) {
+        speakText('餐盤裡面還沒有早餐喔！請先從下面點選你想吃的早餐圖卡！', null, '點餐提醒');
+        return;
+      }
+      const names = orderTray.map(c => c.name).join('、');
+      const hearts = orderTray.reduce((sum, c) => sum + c.priceStars, 0);
+      const saltyCount = orderTray.filter(c => c.tasteCode === 'SALTY').length;
+      const sweetCount = orderTray.filter(c => c.tasteCode === 'SWEET').length;
+      speakText(`早安老闆！我今天一共點了 ${orderTray.length} 樣早餐，有：${names}。裡面有 ${saltyCount} 樣是鹹的、${sweetCount} 樣是甜的，總共是 ${hearts} 顆愛心。好朋友，請你一起吃豐盛的台灣早餐，開動囉！`, null, '好朋友點餐總結');
+    }
+
+    // 初始化
+    renderBreakfastList('ALL');
+    initOrderTrayGrid();
+  </script>
+</body>
+</html>

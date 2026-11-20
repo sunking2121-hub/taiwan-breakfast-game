@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>《吃早餐啦！台灣早餐地圖》A4 對折黏貼版（單張高 8.9 cm × 寬 6.4 cm）</title>
+  <script src="吃早餐啦_cards_data.js"></script>
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #E2E8F0;
+      font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+    }
+    .no-print-bar {
+      background: #7C2D12;
+      color: #FFFFFF;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .no-print-bar button {
+      background: #FACC15;
+      color: #7C2D12;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-weight: 900;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .sheet {
+      width: 297mm;
+      height: 210mm;
+      background: #FFFFFF;
+      margin: 8mm auto;
+      padding: 5mm 12mm 5mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      page-break-after: always;
+      break-after: page;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      position: relative;
+    }
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 8pt;
+      color: #475569;
+      border-bottom: 0.3mm solid #CBD5E1;
+      padding-bottom: 1.2mm;
+      margin-bottom: 3mm;
+    }
+    .grid-2x2 {
+      display: grid;
+      grid-template-columns: 128mm 128mm;
+      grid-template-rows: 89mm 89mm;
+      column-gap: 11mm;
+      row-gap: 7mm;
+      justify-content: center;
+      align-content: center;
+      margin: auto 0;
+    }
+    /* 每組對折卡：左邊正面 A (64×89mm) + 右邊反面 B (64×89mm) = 128×89mm */
+    .fold-pair {
+      width: 128mm;
+      height: 89mm;
+      display: flex;
+      position: relative;
+      border: 0.25mm solid #94A3B8;
+      background: #FFFFFF;
+    }
+    .card-face {
+      width: 64mm;
+      height: 89mm;
+      position: relative;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+    /* 卡牌圓角裁切框線 (5mm 圓角) */
+    .card-rounded-guide {
+      position: absolute;
+      inset: 0;
+      border-radius: 5mm;
+      border: 0.35mm solid #CBD5E1;
+      overflow: hidden;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-rounded-guide svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    /* 中央垂直對折虛線 */
+    .fold-line {
+      position: absolute;
+      left: 64mm;
+      top: -1.5mm;
+      bottom: -1.5mm;
+      width: 0;
+      border-left: 0.45mm dashed #EF4444;
+      z-index: 10;
+    }
+    .fold-label {
+      position: absolute;
+      left: 64mm;
+      top: -4.2mm;
+      transform: translateX(-50%);
+      background: #FFFFFF;
+      color: #DC2626;
+      font-size: 6.5pt;
+      font-weight: 800;
+      padding: 0 1.5mm;
+      white-space: nowrap;
+      z-index: 12;
+    }
+    .card-tag {
+      position: absolute;
+      top: -4.2mm;
+      left: 0;
+      font-size: 6.5pt;
+      color: #475569;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    @media print {
+      html, body {
+        background: #FFFFFF;
+      }
+      .no-print-bar {
+        display: none !important;
+      }
+      .sheet {
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print-bar">
+    <div>
+      <strong>✂️ 《吃早餐啦！台灣早餐地圖》A4 對折黏貼版（3–5 歲幼兒園課程版）</strong>
+      <span style="font-size:13px;color:#FED7AA;margin-left:12px;">
+        每張完成尺寸：<b>高 8.9 cm × 寬 6.4 cm</b>（共 36 張：30 張台灣特色早餐卡 + 4 張中/西/鹹/甜分類板卡 + 1 張點餐卡 + 1 張封面說明書卡）｜列印請選「實際大小 100%」
+      </span>
+    </div>
+    <button onclick="window.print()">🖨️ 立即列印 / 另存 PDF</button>
+  </div>
+
+  <div id="sheets-container"></div>
+
+  <script>
+    const container = document.getElementById('sheets-container');
+    const perPage = 4;
+    const totalPages = Math.ceil(ALL_BREAKFAST_ITEMS.length / perPage);
+
+    for (let p = 0; p < totalPages; p++) {
+      const slice = ALL_BREAKFAST_ITEMS.slice(p * perPage, (p + 1) * perPage);
+      const sheet = document.createElement('div');
+      sheet.className = 'sheet';
+
+      let pageTitle = '';
+      if (p < 3) {
+        pageTitle = `中式傳統早餐卡（第 ${p * 4 + 1} ~ ${p * 4 + slice.length} 張）`;
+      } else if (p < 6) {
+        pageTitle = `西式早餐與在地特色早餐卡（第 ${p * 4 + 1} ~ ${p * 4 + slice.length} 張）`;
+      } else if (p < 8) {
+        pageTitle = `台灣各縣市特色早餐與分類卡（第 ${p * 4 + 1} ~ ${p * 4 + slice.length} 張）`;
+      } else {
+        pageTitle = `幼兒園鹹甜分類卡、看圖點餐卡與遊戲說明書卡（第 ${p * 4 + 1} ~ ${p * 4 + slice.length} 張）`;
+      }
+
+      sheet.innerHTML = `
+        <div class="sheet-header">
+          <div><b>《吃早餐啦！台灣早餐地圖》A4 對折黏貼版</b> — ${pageTitle}</div>
+          <div>單張完成尺寸：<b>寬 6.4 cm × 高 8.9 cm</b> ｜ 沿外框剪下後，沿中央紅虛線背對背對折黏貼即可</div>
+          <div>第 ${p + 1} / ${totalPages} 頁</div>
+        </div>
+        <div class="grid-2x2">
+          ${slice.map(item => {
+            const sideAContent = item.renderSVG('A');
+            const sideBContent = item.renderSVG('B');
+            const numLabel = `#${String(item.id).padStart(2, '0')} ${item.name}（${item.category}）`;
+            return `
+              <div class="fold-pair">
+                <div class="card-tag">${numLabel}</div>
+                <div class="fold-label">▼ 對折線 (6.4×8.9cm) ▼</div>
+                <div class="fold-line"></div>
+                <div class="card-face side-a">
+                  <div class="card-rounded-guide">${sideAContent}</div>
+                </div>
+                <div class="card-face side-b">
+                  <div class="card-rounded-guide">${sideBContent}</div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+      container.appendChild(sheet);
+    }
+  </script>
+</body>
+</html>

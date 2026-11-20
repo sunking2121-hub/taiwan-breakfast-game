@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>《吃早餐啦！台灣早餐地圖》A4 雙面列印對齊版（單張高 8.9 cm × 寬 6.4 cm）</title>
+  <script src="吃早餐啦_cards_data.js"></script>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #E2E8F0;
+      font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+    }
+    .no-print-bar {
+      background: #7C2D12;
+      color: #FFFFFF;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .no-print-bar button {
+      background: #FACC15;
+      color: #7C2D12;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-weight: 900;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .sheet {
+      width: 210mm;
+      height: 297mm;
+      background: #FFFFFF;
+      margin: 8mm auto;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      page-break-after: always;
+      break-after: page;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      position: relative;
+    }
+    .sheet-note {
+      position: absolute;
+      top: 4.5mm;
+      left: 9mm;
+      right: 9mm;
+      display: flex;
+      justify-content: space-between;
+      font-size: 7.5pt;
+      color: #64748B;
+    }
+    /* 3x3 九宮格：寬 64mm * 3 = 192mm，高 89mm * 3 = 267mm，完全居中對稱，確保正反雙面列印 100% 精準對位 */
+    .grid-3x3 {
+      width: 192mm;
+      height: 267mm;
+      display: grid;
+      grid-template-columns: repeat(3, 64mm);
+      grid-template-rows: repeat(3, 89mm);
+      gap: 0;
+    }
+    .card-cell {
+      width: 64mm;
+      height: 89mm;
+      position: relative;
+      border: 0.2mm dashed #CBD5E1;
+      background: #FFFFFF;
+    }
+    .card-rounded-guide {
+      position: absolute;
+      inset: 0;
+      border-radius: 5mm;
+      border: 0.35mm solid #94A3B8;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+    .card-rounded-guide svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    @media print {
+      html, body {
+        background: #FFFFFF;
+      }
+      .no-print-bar {
+        display: none !important;
+      }
+      .sheet {
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print-bar">
+    <div>
+      <strong>🖨️ 《吃早餐啦！台灣早餐地圖》A4 雙面列印對齊版（九宮格 3×3）</strong>
+      <span style="font-size:13px;color:#FED7AA;margin-left:12px;">
+        每張尺寸：<b>高 8.9 cm × 寬 6.4 cm</b>（共 36 張 = 30 張早餐卡 + 6 張分類/點餐/說明書卡）｜雙面列印請選「長邊翻頁」與「實際大小 100%」
+      </span>
+    </div>
+    <button onclick="window.print()">🖨️ 立即雙面列印 / 另存 PDF</button>
+  </div>
+
+  <div id="sheets-container"></div>
+
+  <script>
+    const container = document.getElementById('sheets-container');
+    const perSheet = 9;
+    const groups = Math.ceil(ALL_BREAKFAST_ITEMS.length / perSheet);
+
+    for (let g = 0; g < groups; g++) {
+      const groupItems = ALL_BREAKFAST_ITEMS.slice(g * perSheet, (g + 1) * perSheet);
+
+      // 1. 正面頁 (A面)
+      const frontSheet = document.createElement('div');
+      frontSheet.className = 'sheet';
+      frontSheet.innerHTML = `
+        <div class="sheet-note">
+          <span><b>《吃早餐啦！台灣早餐地圖》雙面列印版 — 第 ${g + 1} 組【正面 A：早餐圖卡】</b>（單張 6.4 × 8.9 cm）</span>
+          <span>列印設定：100% 實際大小、雙面列印（長邊翻頁）｜第 ${g * 2 + 1} / ${groups * 2} 頁</span>
+        </div>
+        <div class="grid-3x3">
+          ${groupItems.map(item => {
+            const content = item.renderSVG('A');
+            return `<div class="card-cell"><div class="card-rounded-guide">${content}</div></div>`;
+          }).join('')}
+        </div>
+      `;
+      container.appendChild(frontSheet);
+
+      // 2. 反面頁 (B面) — 每一橫列 (3張) 左右順序反轉，以便紙張翻面後正反面 100% 對齊
+      const mirroredBackItems = [];
+      for (let r = 0; r < 3; r++) {
+        const rowSlice = groupItems.slice(r * 3, r * 3 + 3);
+        while (rowSlice.length < 3) rowSlice.push(null);
+        mirroredBackItems.push(...rowSlice.reverse());
+      }
+
+      const backSheet = document.createElement('div');
+      backSheet.className = 'sheet';
+      backSheet.innerHTML = `
+        <div class="sheet-note">
+          <span><b>《吃早餐啦！台灣早餐地圖》雙面列印版 — 第 ${g + 1} 組【反面 B：早餐小百科（已自動水平鏡像對齊）】</b></span>
+          <span>請對應上一頁背面列印（長邊翻頁）｜第 ${g * 2 + 2} / ${groups * 2} 頁</span>
+        </div>
+        <div class="grid-3x3">
+          ${mirroredBackItems.map(item => {
+            if (!item) return `<div class="card-cell"></div>`;
+            const content = item.renderSVG('B');
+            return `<div class="card-cell"><div class="card-rounded-guide">${content}</div></div>`;
+          }).join('')}
+        </div>
+      `;
+      container.appendChild(backSheet);
+    }
+  </script>
+</body>
+</html>
